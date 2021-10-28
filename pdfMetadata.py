@@ -30,7 +30,6 @@ class command:
             keywords = keywords.format("")
         elif self.kwaction == "add":
             keywords = keywords.format(','.join(self.kwords))
-        print(keywords)
         return keywords
 
     def parseTitle(self):
@@ -38,7 +37,6 @@ class command:
         if self.title:
             title = " -Title=\"{}\""
             title = title.format(self.title)
-        print(title)
         return title
 
     def parseAuthor(self):
@@ -46,7 +44,6 @@ class command:
         if self.author:
             author = " -Author=\"{}\""
             author = author.format(self.author)
-        print(author)
         return author
 
     def parseSubject(self):
@@ -54,7 +51,6 @@ class command:
         if self.subject:
             subject = " -Subject=\"{}\""
             subject = subject.format(self.subject)
-        print(subject)
         return subject
 
     def execCommand(self):
@@ -108,7 +104,8 @@ class pdfMetadata:
             parser.error("-k needs one of these orders: rm, add, clr")
 
         self.cmd.kwaction = self.args.keywords[0]
-        self.cmd.kwords   = self.args.keywords[1:]
+        aux = self.args.keywords[1:]
+        self.cmd.kwords = [w.strip() for w in ' '.join(aux).split(',')]
 
         if self.args.author:
             self.cmd.author = ' '.join(self.args.author)
