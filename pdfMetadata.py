@@ -22,6 +22,7 @@ class command:
         self.cmd += self.parseTitle()
         self.cmd += self.parseAuthor()
         self.cmd += self.parseSubject()
+        print("[+] CMD: ", self.cmd)
 
     def parseKeywords(self):
         keywords = " -keywords=\"{}\""
@@ -35,7 +36,7 @@ class command:
     def parseTitle(self):
         title = ""
         if self.title:
-            title = " -Title={}"
+            title = " -Title=\"{}\""
             title = title.format(self.title)
         print(title)
         return title
@@ -43,7 +44,7 @@ class command:
     def parseAuthor(self):
         author = ""
         if self.author:
-            author = " -Author={}"
+            author = " -Author=\"{}\""
             author = author.format(self.author)
         print(author)
         return author
@@ -51,7 +52,7 @@ class command:
     def parseSubject(self):
         subject = ""
         if self.subject:
-            subject = " -Subject={}"
+            subject = " -Subject=\"{}\""
             subject = subject.format(self.subject)
         print(subject)
         return subject
@@ -83,7 +84,8 @@ class pdfMetadata:
                             help="Add or remove keywords")
         parser.add_argument('-a', '--author', nargs='+', \
                             help="Author of the file, (\"\") to delete")
-        parser.add_argument('-s', '--subject', help="Add subject")
+        parser.add_argument('-s', '--subject', nargs='+', \
+                            help="Add subject")
 
         self.args = parser.parse_args()
 
@@ -112,7 +114,7 @@ class pdfMetadata:
             self.cmd.author = ' '.join(self.args.author)
 
         if self.args.subject:
-            self.cmd.subject = self.args.subject
+            self.cmd.subject = ' '.join(self.args.subject)
 
     def clearOriginal(self):
         name = self.file + "_original"
