@@ -10,6 +10,7 @@ class command:
     kwords   = []
     title    = ""
     author   = ""
+    subject  = ""
     out      = ""
 
     def __init__(self, file):
@@ -17,15 +18,43 @@ class command:
 
     def buildCommand(self):
         self.cmd += self.file
-        if self.kwaction != "":
-             self.cmd += " -keywords=\""
-             self.cmd += ','.join(self.kwords)
-             self.cmd += "\""
+        self.cmd += self.parseKeywords()
+        self.cmd += self.parseTitle()
+        self.cmd += self.parseAuthor()
+        self.cmd += self.parseSubject()
+
+    def parseKeywords(self):
+        keywords = " -keywords=\"{}\""
+        if   self.kwaction == "clr":
+            keywords = keywords.format("")
+        elif self.kwaction == "add":
+            keywords = keywords.format(','.join(self.kwords))
+        print(keywords)
+        return keywords
+
+    def parseTitle(self):
+        title = ""
         if self.title:
-            self.cmd += " -Title=\"" + self.title + "\""
+            title = " -Title={}"
+            title = title.format(self.title)
+        print(title)
+        return title
+
+    def parseAuthor(self):
+        author = ""
         if self.author:
-            self.cmd += " -Author=\"" + self.author + "\""
-        print("[+] CMD: " + self.cmd)
+            author = " -Author={}"
+            author = author.format(self.author)
+        print(author)
+        return author
+
+    def parseSubject(self):
+        subject = ""
+        if self.subject:
+            subject = " -Subject={}"
+            subject = subject.format(self.subject)
+        print(subject)
+        return subject
 
     def execCommand(self):
         try:
@@ -54,6 +83,7 @@ class pdfMetadata:
                             help="Add or remove keywords")
         parser.add_argument('-a', '--author', nargs='+', \
                             help="Author of the file, (\"\") to delete")
+        parser.add_argument('-s', '--subject', help="Add subject")
 
         self.args = parser.parse_args()
 
@@ -68,17 +98,21 @@ class pdfMetadata:
             parser.error("Must specify a PDF file")
         if not self.args.keywords and not self.args.author:
             parser.error("One action must be specified (like -k)")
-        if  len(self.args.keywords) < 2:
-            parser.error("keyword argument must contain one order \
-                         [rm, add, clr] and one or more keywords")
-        if self.args.keywords[0] not in ['rm', 'add', 'clr']:
-            parser.error("-k order not recognized. Accepted: rm, add, clr")
+        if self.args.keywords[0] == "clr" and len(self.args.keywords) > 1:
+            parser.error("'-k clr' does not accept keywords")
+        if self.args.keywords[0] == "rm" and len(self.args.keywords) < 2:
+            parser.error("'-k rm' must contain at least one keyword")
+        if self.args.keywords[0] not in ['add', 'clr']:
+            parser.error("-k needs one of these orders: rm, add, clr")
 
         self.cmd.kwaction = self.args.keywords[0]
         self.cmd.kwords   = self.args.keywords[1:]
 
         if self.args.author:
             self.cmd.author = ' '.join(self.args.author)
+
+        if self.args.subject:
+            self.cmd.subject = self.args.subject
 
     def clearOriginal(self):
         name = self.file + "_original"
