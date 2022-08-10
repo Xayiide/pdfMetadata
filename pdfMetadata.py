@@ -18,11 +18,13 @@ class command:
 
     def buildCommand(self):
         self.cmd += self.file
-        self.cmd += self.parseKeywords()
+        keywords  = self.parseKeywords()
+        self.cmd += keywords
         self.cmd += self.parseTitle()
         self.cmd += self.parseAuthor()
         self.cmd += self.parseSubject()
-        print("[+] CMD: ", self.cmd)
+
+        print("[+] ", keywords)
 
     def parseKeywords(self):
         keywords = " -keywords=\"{}\""
